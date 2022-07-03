@@ -7,10 +7,9 @@ df_titanic <- as.data.frame(Titanic)
 
 lapply(df_titanic, rep, df_titanic$Freq) |>
   as.data.frame() |>
-  mutate(Survived = as.integer((Survived == "Yes"))) |>
   select(-Freq) |>
-  mutate(Age_Num = case_when(Age == "Child" ~ runif(1, 0, 18), 
-                              TRUE ~ -99)) |>
+  # mutate(Age_Num = case_when(Age == "Child" ~ runif(1, 0, 18), 
+  #                             TRUE ~ -99)) |>
   write.table("titanic.txt", sep = "\t",
             col.names = T, row.names = F)
 
