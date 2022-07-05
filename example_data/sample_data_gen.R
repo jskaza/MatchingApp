@@ -5,11 +5,13 @@ library(purrr)
 
 df_titanic <- as.data.frame(Titanic)
 
-lapply(df_titanic, rep, df_titanic$Freq) |>
+df_titanic <- lapply(df_titanic, rep, df_titanic$Freq) |>
   as.data.frame() |>
   select(-Freq) |>
+  rowid_to_column("id")
   # mutate(Age_Num = case_when(Age == "Child" ~ runif(1, 0, 18), 
   #                             TRUE ~ -99)) |>
+df_titanic[sample(nrow(df_titanic)),] |>
   write.table("titanic.txt", sep = "\t",
             col.names = T, row.names = F)
 
