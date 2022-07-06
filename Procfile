@@ -1,1 +1,1 @@
-web: julia --project src/MatchingApp.jl $PORT
+web: julia --project bin/server
