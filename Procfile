@@ -1,1 +1,1 @@
-web: bin/server $PORT
+web: bin/server
