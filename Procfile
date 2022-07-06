@@ -1,1 +1,1 @@
-web: julia --project bin/server
+web: julia bin/server
