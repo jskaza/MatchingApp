@@ -1,1 +1,1 @@
-web: julia bin/server
+web: bin/server
