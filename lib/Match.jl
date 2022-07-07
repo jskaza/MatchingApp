@@ -79,8 +79,12 @@ function add_matches(df, match_df, _id_col_name, label_col_name)
     return vcat(df, to_add)
 end
 
-function main(file,types,_id_col_name,label_col_name,case,control,covariates,n,n_exact,replacement;ps_col_name="propensityScore",caliper="calc")
-    df = CSV.read(file, DataFrame; delim = '\t', header = true, types = types)
+function main(file,
+    _id_col_name,label_col_name,case,control,covariates,
+    n,n_exact,replacement;
+    ps_col_name="propensityScore",caliper="calc")
+
+    df = CSV.read(file, DataFrame; delim = '\t', header = true, stringtype = String)
     ps_df = make_dataset(df, _id_col_name, label_col_name, case, control, covariates)
     mod = fit_logit(ps_df, _id_col_name, label_col_name, case)
     ps_df = propensity_scores(ps_df, mod, _id_col_name, label_col_name, ps_col_name=ps_col_name)

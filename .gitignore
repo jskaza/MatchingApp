@@ -48,3 +48,4 @@ db/*.sqlite
 .Rhistory
 lib/example_data/
 *.ipynb
+example_data/

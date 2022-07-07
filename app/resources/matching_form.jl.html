@@ -1,0 +1,10 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<p>
+<%io = IOBuffer(); 
+pretty_table(io, describe(df), nosubheader=true, backend = :html);
+String(take!(io))
+ %>
+</p>
+</html>
