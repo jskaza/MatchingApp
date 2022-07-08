@@ -1,10 +1,53 @@
+<script src="js/select2.js"></script>
 
-<!DOCTYPE html>
-<html lang="en">
-<p>
-<%io = IOBuffer(); 
-pretty_table(io, describe(df), nosubheader=true, backend = :html);
-String(take!(io))
- %>
-</p>
-</html>
+
+
+<form action="/" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+    <label for="target">Specify Formula</label><br>
+    <select class="js-example-basic-single" name="target">
+        <% for_each(col_names) do c %>
+            <option value="$(c)">$(c)</option>
+            <% end %>
+    </select> 
+    ~
+    <select class="js-example-basic-multiple" name="covariates[]" multiple="multiple" style="width: 75%"">
+    <% for_each(col_names) do c %>
+    <option value="$(c)">$(c)</option>
+        <% end %>
+    </select>
+    <hr>    
+    <label for="_id">Unique Identifier</label>
+    <select class="js-example-basic-single" name="_id">
+        <% for_each(col_names) do c %>
+            <option value="$(c)">$(c)</option>
+            <% end %>
+    </select> 
+    <br>
+    <br>
+    <label for="case">Case Label</label>
+    <input type="text" name = "case">
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <label for="control">Control Label</label>
+    <input type="text" name = "control">
+    <hr>
+    <label for="ratio">Control:Case</label>
+    <input type="text" name = "ratio">:1
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <label for="caliper">Caliper</label>
+    <input type="text" name = "caliper" placeholder="Default=0.2*SD">
+    <hr>
+    <label for="n_exact">N Exact</label>
+    <input type="checkbox" id=n_exact" name="n_exact" value="n_exact">
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <label for="replacement">Replacement</label>
+    <input type="checkbox" id=replacement" name="replacement" value="replacement">
+    <hr>
+    <div class="form-group">
+        <label for="dataset2">Upload .txt file again (sorry, I need to setup the database)</label>
+        <input type="file" class="form-control-file" name="dataset2">
+    </div>
+
+</div>
+<button type="submit" class="btn btn-primary">Submit</button>
+</form>
