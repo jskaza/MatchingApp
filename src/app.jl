@@ -143,7 +143,7 @@ function launchServer(port)
             n = parse(Int64, form[:ratio])
             n_exact = haskey(form, "n_exact")
             replacement = haskey(form, "replacement")
-            matching = Match.main(df,id,y,case,control,X,n,n_exact,replacement);
+            matching = main(df,id,y,case,control,X,n,n_exact,replacement);
             io = IOBuffer();
             pretty_table(io, matching, nosubheader=true, backend=:html)
             String(take!(io))
