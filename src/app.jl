@@ -161,7 +161,7 @@ function launchServer(port)
         n = parse(Int64, payload(:n))
         n_exact = payload(:n_exact) == "true"
         replacement = payload(:replacement) == "true"
-        matched_df = Match.main(df,payload(:id),payload(:y),payload(:case),payload(:control),X,n,n_exact,replacement)
+        matched_df = main(df,payload(:id),payload(:y),payload(:case),payload(:control),X,n,n_exact,replacement)
         io = IOBuffer();
         pretty_table(io, matched_df, nosubheader=true, backend=:html)
         rm("$(payload(:dataset)).txt")
