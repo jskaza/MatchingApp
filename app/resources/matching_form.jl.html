@@ -1,8 +1,8 @@
-<script src="js/select2.js"></script>
+<script src="../../js/select2.js"></script>
 
 
 
-<form action="/" method="POST" enctype="multipart/form-data">
+<form action="/results" method="POST" enctype="multipart/form-data">
     <div class="form-group">
     <label for="target">Specify Formula</label><br>
     <select class="js-example-basic-single" name="target">
@@ -42,11 +42,9 @@
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <label for="replacement">Replacement</label>
     <input type="checkbox" id=replacement" name="replacement" value="replacement">
-    <hr>
-    <div class="form-group">
-        <label for="dataset2">Upload .txt file again (sorry, I need to setup the database)</label>
-        <input type="file" class="form-control-file" name="dataset2">
-    </div>
+
+    <input type="hidden" name="dataset" id="dataset" value= "$(dataset)" />
+
 
 </div>
 <button type="submit" class="btn btn-primary">Submit</button>

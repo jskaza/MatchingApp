@@ -7,48 +7,72 @@ using Match
 using PrettyTables
 using CSV
 using DataFrames
+using SQLite
+using IterableTables
+using URIs
+
+# db = SQLite.DB("datasets")
+
 
 route("/") do 
   html(path"app/resources/file_form.jl.html", layout = path"app/layouts/app.jl.html")
 end
 
-route("/", method = POST) do
-  if infilespayload(:dataset)
-    write(filespayload(:dataset))
+route("/specs", method = POST) do
+  # if infilespayload(:dataset)
+  write(filespayload(:dataset))
+  _id = split(filename(filespayload(:dataset)), ".txt")[1]
+  redirect(linkto(:matching_spec, _id = _id))
+  # end
+end 
 
-    df = CSV.read(filename(filespayload(:dataset)), DataFrame; delim = '\t', header = true)
+# route("/specs") do
+#   # if infilespayload(:dataset)
+#   # write(filespayload(:dataset))
+#   # _id = split(filename(filespayload(:dataset)), ".txt")[1]
+#   html("ddd")
+#   # linkto(:dataset_matching, _id = _id)
+#   # end
+# end 
 
-    col_names = names(df)
-    html(path"app/resources/matching_form.jl.html", col_names = col_names, df=filespayload(:dataset), layout = path"app/layouts/app.jl.html")
-
-    # pretty_table(io, describe(df), backend = :html)
-    # tab = String(take!(io))
-    # html(tab, layout = path"app/layouts/app.jl.html")
-    # for i in names(df)
-    #   render(i)
-    # end
-    # X = ["sex","FL","RW","BD"]
-
-  else
-
-    write(filespayload(:dataset2))
-
-    df = CSV.read(filename(filespayload(:dataset2)), DataFrame; delim = '\t', header = true, stringtype=String)
-
-    form = postpayload()
-    id = form[:_id]
-    y = form[:target]
-    case = form[:case]
-    control = form[:control]
-    X = form[Symbol("covariates[]")]
-    n = parse(Int64, form[:ratio])
-    n_exact = haskey(form, "n_exact")
-    replacement = haskey(form, "replacement")
-    matching = Match.main(df,id,y,case,control,X,n,n_exact,replacement);
-    io = IOBuffer();
-    pretty_table(io, matching, nosubheader=true, backend=:html)
-    String(take!(io))
-  end 
+route("/specs/:_id", named = :matching_spec) do
+  df = CSV.read("$(payload(:_id)).txt", DataFrame; delim = '\t', header = true, stringtype=String)
+  col_names = names(df)
+  html(path"app/resources/matching_form.jl.html", dataset = payload(:_id), col_names = col_names, layout = path"app/layouts/app.jl.html")
 end
 
+route("/results", method = POST) do  
+  form = postpayload()
+  dataset = form[:dataset]
+  id = form[:_id]
+  y = form[:target]
+  case = form[:case]
+  control = form[:control]
+  X = join(form[Symbol("covariates[]")], "%2B")
+  n = form[:ratio]
+  n_exact = haskey(form, "n_exact") ? "true" : "false"
+  replacement = (haskey(form, "replacement") ? "true" : "false")
+  redirect("/results/dataset/"*dataset*"/id/"*id*"/y/"*y*"/case/"*case*"/control/"*control*"/X/"*X*"/n/"*n*"/n_exact/"*n_exact*"/replacement/"*replacement)
+  # redirect(linkto(:matching_results, dataset=dataset,id=id,y=y,case=case,control=control,X=X,n=n,n_exact=n_exact,replacement=replacement))
+# NEED TO CIRCUMVENT EXPLICIT CASE CONVERSION
+  # matching = Match.main(df,id,y,case,control,X,n,n_exact,replacement);
+  # io = IOBuffer();
+  # pretty_table(io, matching, nosubheader=true, backend=:html)
+  # String(take!(io))
+end
+
+route("/results/dataset/:dataset/id/:id/y/:y/case/:case/control/:control/X/:X/n/:n/n_exact/:n_exact/replacement/:replacement", named = :matching_results) do
+
+  df = CSV.read("$(payload(:dataset)).txt", DataFrame; delim = '\t', header = true, stringtype=String)
+  X = split(payload(:X),"%2B")
+  n = parse(Int64, payload(:n))
+  n_exact = payload(:n_exact) == "true"
+  replacement = payload(:replacement) == "true"
+  matched_df = Match.main(df,payload(:id),payload(:y),payload(:case),payload(:control),X,n,n_exact,replacement)
+  io = IOBuffer();
+  pretty_table(io, matched_df, nosubheader=true, backend=:html)
+  rm("$(payload(:dataset)).txt")
+  String(take!(io))
+  # CSV.write("matched_dataset.csv", matched_df)
+end
 
