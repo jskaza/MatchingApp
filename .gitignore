@@ -47,5 +47,4 @@ db/*.sqlite
 *.csv
 .Rhistory
 lib/example_data/
-*.ipynb
 example_data/
