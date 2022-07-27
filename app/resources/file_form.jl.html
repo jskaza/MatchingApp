@@ -1,15 +1,15 @@
-<p>This is a POC app for propensity score matching. Begin by uploading a tab-delimted .txt file with the following characteristics:
+<p>This is a proof-of-concept app for N-to-1 <a href="https://en.wikipedia.org/wiki/Propensity_score_matching">propensity score matching</a>. Begin by uploading a tab-delimted <code>.txt</code>file with the following characteristics:
 <ul>
     <li>Row 1 contains column names</li>
     <li>One column denotes case/control status as a string (e.g., "Case" or "Control")</li>
-    <li>One column serves as an identifier (e.g., a unique ID). The same ID should not be serve as both a Case and a Control. </li>
+    <li>One column serves as an identifier (e.g., a unique ID). The same ID should not serve as both a Case and a Control. </li>
 </ul>
 </p>
 
 <form action="/specs" method="POST" enctype="multipart/form-data">
     <div class="form-group">
         <label for="dataset">Upload .txt file</label>
-        <input type="file" class="form-control-file" name="dataset">
+        <input type="file" accept=".txt" class="form-control-file" name="dataset">
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>

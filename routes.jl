@@ -11,9 +11,6 @@ using SQLite
 using IterableTables
 using URIs
 
-# db = SQLite.DB("datasets")
-
-
 route("/") do 
   html(path"app/resources/file_form.jl.html", layout = path"app/layouts/app.jl.html")
 end
@@ -54,7 +51,7 @@ route("/results", method = POST) do
   replacement = (haskey(form, "replacement") ? "true" : "false")
   redirect("/results/dataset/"*dataset*"/id/"*id*"/y/"*y*"/case/"*case*"/control/"*control*"/X/"*X*"/n/"*n*"/n_exact/"*n_exact*"/replacement/"*replacement)
   # redirect(linkto(:matching_results, dataset=dataset,id=id,y=y,case=case,control=control,X=X,n=n,n_exact=n_exact,replacement=replacement))
-# NEED TO CIRCUMVENT EXPLICIT CASE CONVERSION
+  # NEED TO CIRCUMVENT EXPLICIT CASE CONVERSION
   # matching = Match.main(df,id,y,case,control,X,n,n_exact,replacement);
   # io = IOBuffer();
   # pretty_table(io, matching, nosubheader=true, backend=:html)
@@ -69,10 +66,14 @@ route("/results/dataset/:dataset/id/:id/y/:y/case/:case/control/:control/X/:X/n/
   n_exact = payload(:n_exact) == "true"
   replacement = payload(:replacement) == "true"
   matched_df = Match.main(df,payload(:id),payload(:y),payload(:case),payload(:control),X,n,n_exact,replacement)
-  io = IOBuffer();
-  pretty_table(io, matched_df, nosubheader=true, backend=:html)
-  rm("$(payload(:dataset)).txt")
-  String(take!(io))
-  # CSV.write("matched_dataset.csv", matched_df)
+  # io = IOBuffer();
+  # pretty_table(io, matched_df, nosubheader=true, backend=:html)
+  # rm("$(payload(:dataset)).txt")
+  # String(take!(io))
+  CSV.write("public/matched_dataset.csv", matched_df)
+  densities = Match.ps_density(matched_df, "sp", "O", "B")
+  p1 = sprint(show, "text/html", densities[1])
+  p2 = sprint(show, "text/html", densities[2])
+  html(path"app/resources/post_matching.jl.html",before=p1,after=p2, layout = path"app/layouts/app.jl.html")
+ # html("<a href='/matched_dataset.csv' download='test.csv'>Save to your computer</a>", layout = path"app/layouts/app.jl.html")
 end
-

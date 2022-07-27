@@ -6,6 +6,7 @@ using GLM
 using CSV
 using StatsFuns
 using Statistics
+using StatsPlots
 
 # TODO
 # figure out how to read in types
@@ -91,6 +92,21 @@ function main(df,
     match_df = greedy_match(ps_df, n, n_exact, replacement, _id_col_name, label_col_name, ps_col_name, case, control, caliper=caliper)
     df = merge_propensity_scores(df, ps_df, [_id_col_name, label_col_name])
     return add_matches(df, match_df, _id_col_name, label_col_name)
+end
+
+function ps_density(df,label_col_name,case,control;ps_col_name="propensityScore")
+    ps_case_before = @subset(df, $label_col_name .== case)[:, ps_col_name]
+    ps_case_after = @subset(df, $label_col_name .== case*" Matched")[:, ps_col_name]
+    ps_control_before = @subset(df, $label_col_name .== control)[:, ps_col_name]
+    ps_control_after = @subset(df, $label_col_name .== control*" Matched")[:, ps_col_name]
+
+    p_before = plot()
+    density!(p_before, [ps_control_before, ps_case_before], label = [control case])
+
+    p_after = plot()
+    density!(p_after, [ps_control_after, ps_case_after], label = [control case])
+
+    return p_before, p_after
 end
 
 end
